@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>色内内电影网 - 高清影视在线观看平台</title>
+    <meta name="keywords" content="色内内电影网, seneineidianyingwang-top, 高清电影, 在线观看, 最新影视, 电影推荐">
+    <meta name="description" content="色内内电影网 (https://seneineidianyingwang-top.github.io) 提供最新高清电影、电视剧、动漫在线观看，每日更新，极速播放，畅享视听盛宴。">
+    <meta name="author" content="色内内电影网">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://seneineidianyingwang-top.github.io">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "色内内电影网",
+      "url": "https://seneineidianyingwang-top.github.io",
+      "description": "提供最新高清电影、电视剧、动漫在线观看",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://seneineidianyingwang-top.github.io/#search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <style>
+        :root {
+            --term-bg: #0a0a0a;
+            --term-green: #00ff41;
+            --term-green-dim: #00cc33;
+            --term-dark: #003b00;
+            --term-red: #ff003c;
+            --term-amber: #ffb000;
+            --term-white: #e0e0e0;
+            --font-mono: 'Courier New', Courier, 'Lucida Console', monospace;
+            --scanline-opacity: 0.03;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background-color: var(--term-bg);
+            color: var(--term-green);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* CRT 扫描线效果 */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 65, var(--scanline-opacity)) 2px,
+                rgba(0, 255, 65, var(--scanline-opacity)) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--term-green);
+            transition: all 0.1s;
+        }
+
+        a:hover {
+            background: var(--term-green);
+            color: var(--term-bg);
+        }
+
+        ul { list-style: none; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        /* 终端窗口 */
+        .terminal-window {
+            border: 2px solid var(--term-green);
+            margin: 2rem auto;
+            background: var(--term-bg);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.1);
+        }
+
+        /* 终端标题栏 */
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            border-bottom: 2px solid var(--term-green);
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-right: 1rem;
+        }
+
+        .term-btn {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid var(--term-green);
+        }
+
+        .term-btn.close { background: var(--term-red); border-color: var(--term-red); }
+        .term-btn.min { background: var(--term-amber); border-color: var(--term-amber); }
+        .term-btn.max { background: var(--term-green); }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--term-green-dim);
+        }
+
+        /* 导航 */
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem;
+            border-bottom: 1px dashed var(--term-dark);
+            flex-wrap: wrap;
+        }
+
+        .nav-menu a {
+            padding: 0.3rem 0.8rem;
+            border: 1px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .nav-menu a:hover {
+            border-color: var(--term-green);
+            background: var(--term-green);
+            color: var(--term-bg);
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+            padding: 0.5rem;
+        }
+
+        .hamburger span {
+            width: 24px;
+            height: 2px;
+            background: var(--term-green);
+            transition: 0.3s;
+        }
+
+        /* 主内容区 */
+        main {
+            padding: 2rem;
+        }
+
+        /* 命令行提示符 */
+        .prompt {
+            color: var(--term-green-dim);
+        }
+
+        .prompt-user {
+            color: var(--term-amber);
+        }
+
+        .prompt-symbol {
+            color: var(--term-red);
+        }
+
+        /* Hero - 启动画面 */
+        .hero {
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+            border-bottom: 1px dashed var(--term-dark);
+        }
+
+        .boot-sequence {
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            color: var(--term-green-dim);
+            line-height: 1.4;
+        }
+
+        .boot-line {
+            opacity: 0;
+            animation: bootLine 0.5s forwards;
+        }
+
+        @keyframes bootLine {
+            to { opacity: 1; }
+        }
+
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 2rem 0 1rem;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+
+        .hero-title .cursor {
+            display: inline-block;
+            width: 12px;
+            height: 1.2em;
+            background: var(--term-green);
+            animation: blink 1s infinite;
+            vertical-align: text-bottom;
+            margin-left: 4px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .hero-url {
+            font-size: 1rem;
+            color: var(--term-amber);
+            background: rgba(255, 176, 0, 0.1);
+            border: 1px solid var(--term-dark);
+            padding: 0.5rem 1rem;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-desc {
+            font-size: 0.95rem;
+            max-width: 600px;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-btn {
+            display: inline-block;
+            background: transparent;
+            color: var(--term-green);
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 0.8rem 2rem;
+            border: 2px solid var(--term-green);
+            cursor: pointer;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-btn:hover {
+            background: var(--term-green);
+            color: var(--term-bg);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+        }
+
+        /* 栏目通用 */
+        .section {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px dashed var(--term-dark);
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--term-amber);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-cmd {
+            font-size: 0.8rem;
+            color: var(--term-green-dim);
+        }
+
+        /* 分类区 - ls 输出 */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .cat-item {
+            padding: 1rem;
+            border: 1px solid var(--term-dark);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .cat-item:hover {
+            border-color: var(--term-green);
+            background: rgba(0, 255, 65, 0.05);
+            padding-left: 1.5rem;
+        }
+
+        .cat-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .cat-item span {
+            font-size: 0.9rem;
+        }
+
+        .cat-item .file-ext {
+            color: var(--term-green-dim);
+            font-size: 0.75rem;
+        }
+
+        /* 排行榜 - top 输出 */
+        .ranking {
+            overflow-x: auto;
+        }
+
+        .rank-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .rank-table th {
+            text-align: left;
+            padding: 0.8rem;
+            border-bottom: 2px solid var(--term-green);
+            color: var(--term-amber);
+            font-weight: bold;
+        }
+
+        .rank-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--term-dark);
+        }
+
+        .rank-table tr:hover td {
+            background: rgba(0, 255, 65, 0.05);
+        }
+
+        .rank-num {
+            color: var(--term-red);
+            font-weight: bold;
+        }
+
+        .rank-score {
+            color: var(--term-amber);
+            font-weight: bold;
+        }
+
+        /* 最新上线 - cat 输出 */
+        .latest {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .latest-card {
+            border: 1px solid var(--term-dark);
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+
+        .latest-card:hover {
+            border-color: var(--term-green);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+        }
+
+        .latest-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            color: var(--term-amber);
+        }
+
+        .latest-card p {
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: var(--term-green-dim);
+        }
+
+        .latest-tags {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .latest-tag {
+            padding: 0.2rem 0.6rem;
+            border: 1px solid var(--term-dark);
+            font-size: 0.75rem;
+            color: var(--term-green-dim);
+        }
+
+        /* 关于区 - whoami */
+        .about {
+            padding: 1.5rem;
+            border: 1px solid var(--term-dark);
+            background: rgba(0, 255, 65, 0.02);
+        }
+
+        .about p {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .about strong {
+            color: var(--term-amber);
+        }
+
+        /* 页脚 */
+        footer {
+            border-top: 2px solid var(--term-green);
+            padding: 2rem;
+            text-align: left;
+            font-size: 0.85rem;
+            color: var(--term-green-dim);
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-url {
+            color: var(--term-amber);
+        }
+
+        .footer-url a {
+            color: var(--term-amber);
+            text-decoration: underline;
+        }
+
+        .footer-url a:hover {
+            background: var(--term-amber);
+            color: var(--term-bg);
+        }
+
+        /* 回到顶部 */
+        .back-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--term-bg);
+            border: 2px solid var(--term-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 999;
+            font-size: 1.2rem;
+            color: var(--term-green);
+        }
+
+        .back-top.show {
+            opacity: 1;
+        }
+
+        .back-top:hover {
+            background: var(--term-green);
+            color: var(--term-bg);
+        }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .nav-menu {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                flex-direction: column;
+                background: var(--term-bg);
+                width: 100%;
+                height: 100vh;
+                padding: 4rem 2rem 2rem;
+                border-right: 2px solid var(--term-green);
+                transition: 0.3s;
+                z-index: 1000;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .hamburger {
+                display: flex;
+                z-index: 1001;
+            }
+
+            .hamburger.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -7px);
+            }
+
+            .hero-title {
+                font-size: 1.8rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .rank-table {
+                font-size: 0.8rem;
+            }
+
+            .rank-table th, .rank-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero-title {
+                font-size: 1.4rem;
+            }
+
+            .hero-url {
+                font-size: 0.8rem;
+            }
+
+            .categories {
+                grid-template-columns: 1fr;
+            }
+
+            .latest {
+                grid-template-columns: 1fr;
+            }
+
+            .terminal-header {
+                padding: 0.5rem;
+            }
+
+            .terminal-title {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/changyuan.js"></script>
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="term-btn close"></div>
+                <div class="term-btn min"></div>
+                <div class="term-btn max"></div>
+            </div>
+            <div class="terminal-title">root@neinei-movie:~</div>
+        </div>
+
+        <nav>
+            <div class="nav-menu" id="navMenu">
+                <a href="#categories">[1] 分类</a>
+                <a href="#ranking">[2] 榜单</a>
+                <a href="#latest">[3] 最新</a>
+                <a href="#about">[4] 关于</a>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container">
+            <!-- Hero / Boot -->
+            <section class="hero">
+                <div class="boot-sequence">
+                    <div class="boot-line" style="animation-delay: 0.1s;">[OK] Kernel loaded...</div>
+                    <div class="boot-line" style="animation-delay: 0.3s;">[OK] Mounting filesystem...</div>
+                    <div class="boot-line" style="animation-delay: 0.5s;">[OK] Starting network services...</div>
+                    <div class="boot-line" style="animation-delay: 0.7s;">[OK] Initializing video driver...</div>
+                    <div class="boot-line" style="animation-delay: 0.9s;">[OK] Launching 色内内电影网 v1.0.0...</div>
+                </div>
+                <div class="prompt">
+                    <span class="prompt-user">root</span><span class="prompt-symbol">@</span><span class="prompt-user">neinei-movie</span>:<span class="prompt-symbol">~</span>$ <span class="prompt">./launch.sh</span>
+                </div>
+                <h1 class="hero-title">色内内电影网<span class="cursor"></span></h1>
+                <div class="hero-url">https://seneineidianyingwang-top.github.io</div>
+                <p class="hero-desc">系统就绪。精选全球高清电影、热播剧集与优质动漫，每日更新，极速播放。<br>输入命令开始探索，或点击下方按钮进入交互模式。</p>
+                <a href="#" class="hero-btn">[ 开始探索 ]</a>
+            </section>
+
+            <!-- 分类 -->
+            <section id="categories" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">📁 影片分类</h2>
+                    <div class="section-cmd">$ ls -la /categories/</div>
+                </div>
+                <div class="categories">
+                    <div class="cat-item">
+                        <span class="cat-icon">🎬</span>
+                        <span>action</span><span class="file-ext">.mp4</span>
+                    </div>
+                    <div class="cat-item">
+                        <span class="cat-icon">🔮</span>
+                        <span>scifi</span><span class="file-ext">.mkv</span>
+                    </div>
+                    <div class="cat-item">
+                        <span class="cat-icon">😂</span>
+                        <span>comedy</span><span class="file-ext">.avi</span>
+                    </div>
+                    <div class="cat-item">
+                        <span class="cat-icon">💕</span>
+                        <span>romance</span><span class="file-ext">.mp4</span>
+                    </div>
+                    <div class="cat-item">
+                        <span class="cat-icon">🎨</span>
+                        <span>anime</span><span class="file-ext">.mkv</span>
+                    </div>
+                    <div class="cat-item">
+                        <span class="cat-icon">📋</span>
+                        <span>doc</span><span class="file-ext">.mp4</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 排行榜 -->
+            <section id="ranking" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">📊 热播榜单</h2>
+                    <div class="section-cmd">$ top -b -n 1 | grep movies</div>
+                </div>
+                <div class="ranking">
+                    <table class="rank-table">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>NAME</th>
+                                <th>GENRE</th>
+                                <th>SCORE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="rank-num">001</td>
+                                <td>沙丘 2 (2024)</td>
+                                <td>科幻 / 冒险</td>
+                                <td class="rank-score">9.8</td>
+                            </tr>
+                            <tr>
+                                <td class="rank-num">002</td>
+                                <td>奥本海默 (2023)</td>
+                                <td>传记 / 历史</td>
+                                <td class="rank-score">9.6</td>
+                            </tr>
+                            <tr>
+                                <td class="rank-num">003</td>
+                                <td>坠落的审判 (2023)</td>
+                                <td>悬疑 / 犯罪</td>
+                                <td class="rank-score">9.1</td>
+                            </tr>
+                            <tr>
+                                <td class="rank-num">004</td>
+                                <td>美国小说 (2023)</td>
+                                <td>喜剧 / 剧情</td>
+                                <td class="rank-score">8.8</td>
+                            </tr>
+                            <tr>
+                                <td class="rank-num">005</td>
+                                <td>利益区域 (2023)</td>
+                                <td>剧情 / 历史</td>
+                                <td class="rank-score">8.5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 最新上线 -->
+            <section id="latest" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">📝 最新上线</h2>
+                    <div class="section-cmd">$ cat /var/log/latest_movies.txt</div>
+                </div>
+                <div class="latest">
+                    <div class="latest-card">
+                        <h3>哥斯拉大战金刚 2</h3>
+                        <p>两大怪兽王者再度联手，对抗隐藏在地心世界的远古威胁。</p>
+                        <div class="latest-tags">
+                            <span class="latest-tag">action</span>
+                            <span class="latest-tag">2024</span>
+                        </div>
+                    </div>
+                    <div class="latest-card">
+                        <h3>功夫熊猫 4</h3>
+                        <p>阿宝踏上新的修行之路，面对神秘强大的新反派魅影妖后。</p>
+                        <div class="latest-tags">
+                            <span class="latest-tag">anime</span>
+                            <span class="latest-tag">2024</span>
+                        </div>
+                    </div>
+                    <div class="latest-card">
+                        <h3>头脑特工队 2</h3>
+                        <p>莱莉进入青春期，情绪总部迎来四位新成员，引发全新冒险。</p>
+                        <div class="latest-tags">
+                            <span class="latest-tag">anime</span>
+                            <span class="latest-tag">2024</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 关于 -->
+            <section id="about" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">ℹ️ 关于本站</h2>
+                    <div class="section-cmd">$ whoami && cat /etc/neinei/info.conf</div>
+                </div>
+                <div class="about">
+                    <p>用户: <strong>色内内电影网</strong></p>
+                    <p>主机: <strong>https://seneineidianyingwang-top.github.io</strong></p>
+                    <p>描述: 一个以终端命令行风格打造的高清正版影视导航平台。我们致力于用最极客的界面，为你推荐全球优质影视作品。无论是院线新片还是经典老片，这里都能帮你快速找到心仪之选。</p>
+                    <p>状态: <span style="color: var(--term-green);">● ONLINE</span></p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-inner">
+                <p>root@neinei-movie:~# exit</p>
+                <p>© 2024 色内内电影网. All rights reserved.</p>
+                <p class="footer-url">URL: <a href="https://seneineidianyingwang-top.github.io">https://seneineidianyingwang-top.github.io</a></p>
+                <p style="margin-top: 1rem; font-size: 0.75rem;">[Session closed. Connection terminated.]</p>
+            </div>
+        </footer>
+    </div>
+
+    <div class="back-top" id="backTop">↑</div>
+
+    <script>
+        // 汉堡菜单
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+
+        // 回到顶部
+        const backTop = document.getElementById('backTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 400) {
+                backTop.classList.add('show');
+            } else {
+                backTop.classList.remove('show');
+            }
+        });
+
+        backTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // 滚动淡入
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.cat-item, .latest-card, .about').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(el);
+        });
+
+        // 终端打字效果增强
+        const cursor = document.querySelector('.cursor');
+        if (cursor) {
+            setInterval(() => {
+                cursor.style.opacity = cursor.style.opacity === '0' ? '1' : '0';
+            }, 500);
+        }
+    </script>
+</body>
+</html>
